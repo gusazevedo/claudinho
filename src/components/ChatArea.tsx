@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { ArrowUp, MessageSquareDashed } from 'lucide-react'
-import { useStore } from '../store'
-import { MessageBubble } from './MessageBubble'
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { ArrowUp, MessageSquareDashed } from "lucide-react";
+import { useStore } from "../store";
+import { MessageBubble } from "./MessageBubble";
 
 function EmptyState({ onNew }: { onNew: () => void }) {
   return (
@@ -10,7 +10,9 @@ function EmptyState({ onNew }: { onNew: () => void }) {
         <MessageSquareDashed size={22} className="text-accent" />
       </div>
       <div>
-        <h2 className="text-text-heading font-semibold text-lg">No chat selected</h2>
+        <h2 className="text-text-heading font-semibold text-lg">
+          No chat selected
+        </h2>
         <p className="text-text-muted text-sm mt-1">
           Select a chat from the sidebar or create a new one.
         </p>
@@ -22,62 +24,65 @@ function EmptyState({ onNew }: { onNew: () => void }) {
         Start new chat
       </button>
     </div>
-  )
+  );
 }
 
 export function ChatArea() {
-  const { activeChat, activeChatId, addMessage, createChat } = useStore()
-  const chat = activeChat()
-  const [input, setInput] = useState('')
-  const bottomRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const { activeChat, activeChatId, addMessage, createChat } = useStore();
+  const chat = activeChat();
+  const [input, setInput] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [chat?.messages.length])
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat?.messages.length]);
 
   useEffect(() => {
-    setInput('')
-    textareaRef.current?.focus()
-  }, [activeChatId])
+    setInput("");
+    textareaRef.current?.focus();
+  }, [activeChatId]);
 
   const adjustHeight = () => {
-    const el = textareaRef.current
-    if (!el) return
-    el.style.height = 'auto'
-    el.style.height = Math.min(el.scrollHeight, 200) + 'px'
-  }
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 200) + "px";
+  };
 
   const send = () => {
-    const text = input.trim()
-    if (!text || !activeChatId) return
-    addMessage(activeChatId, text, 'user')
-    setInput('')
-    if (textareaRef.current) textareaRef.current.style.height = 'auto'
-  }
+    const text = input.trim();
+    if (!text || !activeChatId) return;
+    addMessage(activeChatId, text, "user");
+    setInput("");
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
+  };
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      send()
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
     }
-  }
+  };
 
   if (!chat) {
     return (
       <main className="flex-1 flex flex-col h-full bg-bg-base">
         <EmptyState onNew={createChat} />
       </main>
-    )
+    );
   }
 
   return (
     <main className="flex-1 flex flex-col h-full bg-bg-base min-w-0">
       {/* Header */}
       <header className="px-6 py-3 border-b border-border shrink-0 flex items-center gap-3">
-        <span className="text-text-heading font-medium text-sm truncate">{chat.title}</span>
+        <span className="text-text-heading font-medium text-sm truncate">
+          {chat.title}
+        </span>
         <span className="text-text-muted text-xs ml-auto shrink-0">
-          {chat.messages.length} {chat.messages.length === 1 ? 'message' : 'messages'}
+          {chat.messages.length}{" "}
+          {chat.messages.length === 1 ? "message" : "messages"}
         </span>
       </header>
 
@@ -85,7 +90,9 @@ export function ChatArea() {
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
         {chat.messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-text-muted text-sm">Send a message to start the conversation.</p>
+            <p className="text-text-muted text-sm">
+              Send a message to start the conversation.
+            </p>
           </div>
         )}
         {chat.messages.map((msg) => (
@@ -96,16 +103,19 @@ export function ChatArea() {
 
       {/* Input */}
       <div className="px-6 py-4 border-t border-border shrink-0">
-        <div className="flex items-end gap-3 bg-bg-input border border-border rounded-xl px-4 py-3 focus-within:border-accent-border transition-colors">
+        <div className="flex items-center gap-3 bg-bg-input border border-border rounded-xl px-4 py-3 focus-within:border-accent-border transition-colors">
           <textarea
             ref={textareaRef}
             value={input}
-            onChange={(e) => { setInput(e.target.value); adjustHeight() }}
+            onChange={(e) => {
+              setInput(e.target.value);
+              adjustHeight();
+            }}
             onKeyDown={onKeyDown}
-            placeholder="Message… (Enter to send, Shift+Enter for newline)"
+            placeholder="Message... (Enter to send, Shift+Enter for newline)"
             rows={1}
             className="flex-1 bg-transparent text-text-base text-sm font-mono resize-none placeholder:text-text-muted leading-relaxed max-h-[200px] overflow-y-auto"
-            style={{ height: 'auto' }}
+            style={{ height: "auto" }}
           />
           <button
             onClick={send}
@@ -116,9 +126,10 @@ export function ChatArea() {
           </button>
         </div>
         <p className="text-text-muted text-[10px] mt-2 text-right">
-          <kbd className="font-mono">Enter</kbd> send · <kbd className="font-mono">Shift+Enter</kbd> newline
+          <kbd className="font-mono">Enter</kbd> send ·{" "}
+          <kbd className="font-mono">Shift+Enter</kbd> newline
         </p>
       </div>
     </main>
-  )
+  );
 }

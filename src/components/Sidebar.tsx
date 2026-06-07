@@ -56,10 +56,7 @@ function ChatItem({ chat, isActive }: { chat: Chat; isActive: boolean }) {
       )}
 
       {(hovered || isActive) && !editing && (
-        <div
-          className="flex items-center gap-1 animate-fade-in"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="flex items-center gap-1 animate-fade-in" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => { setDraft(chat.title); setEditing(true) }}
             className="p-0.5 rounded opacity-40 hover:opacity-100 hover:text-accent transition-opacity"
@@ -103,29 +100,32 @@ export function Sidebar() {
     { today: [], older: [] }
   )
 
-  if (collapsed) {
-    return (
-      <aside className="w-12 shrink-0 flex flex-col items-center h-full bg-bg-sidebar border-r border-border py-4 transition-all duration-200">
+  return (
+    <aside className={`${collapsed ? 'w-12' : 'w-64'} relative shrink-0 flex flex-col h-full bg-bg-sidebar border-r border-border overflow-hidden transition-[width] duration-200 ease-in-out`}>
+
+      {/* Collapsed: expand button */}
+      <div className={`absolute inset-0 flex flex-col transition-opacity duration-150 ${collapsed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <button
           onClick={() => setCollapsed(false)}
           title="Expand sidebar"
-          className="w-6 h-6 rounded bg-accent flex items-center justify-center hover:opacity-80 transition-opacity"
+          className="w-full h-12 flex items-center justify-center text-text-muted hover:text-text-base hover:bg-bg-elevated transition-colors"
         >
-          <span className="text-xs font-bold text-white">C</span>
+          <PanelLeftOpen size={16} />
         </button>
-      </aside>
-    )
-  }
+      </div>
 
-  return (
-    <aside className="w-64 shrink-0 flex flex-col h-full bg-bg-sidebar border-r border-border transition-all duration-200">
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center justify-between mb-4">
+      {/* Expanded: full sidebar */}
+      <div className={`w-64 shrink-0 flex flex-col h-full transition-opacity duration-150 ${collapsed ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
+
+        {/* Logo + app name + collapse button */}
+        <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-accent flex items-center justify-center">
+            <div className="w-6 h-6 rounded bg-accent flex items-center justify-center shrink-0">
               <span className="text-xs font-bold text-white">C</span>
             </div>
-            <span className="text-text-heading font-semibold text-sm tracking-wide">claudinho</span>
+            <span className="text-text-heading font-semibold text-sm tracking-wide whitespace-nowrap">
+              Claudinho
+            </span>
           </div>
           <button
             onClick={() => setCollapsed(true)}
@@ -136,46 +136,54 @@ export function Sidebar() {
           </button>
         </div>
 
-        <button
-          onClick={createChat}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-accent-dim border border-accent-border text-accent text-sm font-medium hover:bg-accent hover:text-white transition-all duration-150"
-        >
-          <Plus size={15} />
-          New chat
-        </button>
+        {/* New chat button */}
+        <div className="px-4 pb-4">
+          <button
+            onClick={createChat}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-accent-dim border border-accent-border text-accent text-sm font-medium hover:bg-accent hover:text-white transition-all duration-150"
+          >
+            <Plus size={15} />
+            New chat
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-border" />
+
+        {/* Chat list */}
+        <nav className="flex-1 overflow-y-auto p-2 space-y-4">
+          {chats.length === 0 && (
+            <p className="text-text-muted text-xs text-center mt-8 px-4 leading-relaxed">
+              No chats yet.
+              <br />
+              Click <span className="text-accent">New chat</span> to start.
+            </p>
+          )}
+
+          {grouped.today.length > 0 && (
+            <section>
+              <p className="text-text-muted text-[10px] uppercase tracking-widest px-3 mb-1">Today</p>
+              <div className="space-y-0.5">
+                {grouped.today.map((c) => (
+                  <ChatItem key={c.id} chat={c} isActive={c.id === activeChatId} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {grouped.older.length > 0 && (
+            <section>
+              <p className="text-text-muted text-[10px] uppercase tracking-widest px-3 mb-1">Older</p>
+              <div className="space-y-0.5">
+                {grouped.older.map((c) => (
+                  <ChatItem key={c.id} chat={c} isActive={c.id === activeChatId} />
+                ))}
+              </div>
+            </section>
+          )}
+        </nav>
+
       </div>
-
-      <nav className="flex-1 overflow-y-auto p-2 space-y-4">
-        {chats.length === 0 && (
-          <p className="text-text-muted text-xs text-center mt-8 px-4 leading-relaxed">
-            No chats yet.
-            <br />
-            Click <span className="text-accent">New chat</span> to start.
-          </p>
-        )}
-
-        {grouped.today.length > 0 && (
-          <section>
-            <p className="text-text-muted text-[10px] uppercase tracking-widest px-3 mb-1">Today</p>
-            <div className="space-y-0.5">
-              {grouped.today.map((c) => (
-                <ChatItem key={c.id} chat={c} isActive={c.id === activeChatId} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {grouped.older.length > 0 && (
-          <section>
-            <p className="text-text-muted text-[10px] uppercase tracking-widest px-3 mb-1">Older</p>
-            <div className="space-y-0.5">
-              {grouped.older.map((c) => (
-                <ChatItem key={c.id} chat={c} isActive={c.id === activeChatId} />
-              ))}
-            </div>
-          </section>
-        )}
-      </nav>
     </aside>
   )
 }
