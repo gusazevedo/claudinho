@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { MessageSquare, Plus, Trash2, Pencil, Check, X } from 'lucide-react'
+import { MessageSquare, Plus, Trash2, Pencil, Check, X, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { useStore, type Chat } from '../store'
 
 function ChatItem({ chat, isActive }: { chat: Chat; isActive: boolean }) {
@@ -91,6 +91,7 @@ function ChatItem({ chat, isActive }: { chat: Chat; isActive: boolean }) {
 
 export function Sidebar() {
   const { chats, activeChatId, createChat } = useStore()
+  const [collapsed, setCollapsed] = useState(false)
 
   const grouped = chats.reduce<{ today: Chat[]; older: Chat[] }>(
     (acc, chat) => {
@@ -102,14 +103,37 @@ export function Sidebar() {
     { today: [], older: [] }
   )
 
+  if (collapsed) {
+    return (
+      <aside className="w-12 shrink-0 flex flex-col items-center h-full bg-bg-sidebar border-r border-border py-4 transition-all duration-200">
+        <button
+          onClick={() => setCollapsed(false)}
+          title="Expand sidebar"
+          className="w-6 h-6 rounded bg-accent flex items-center justify-center hover:opacity-80 transition-opacity"
+        >
+          <span className="text-xs font-bold text-white">C</span>
+        </button>
+      </aside>
+    )
+  }
+
   return (
-    <aside className="w-64 shrink-0 flex flex-col h-full bg-bg-sidebar border-r border-border">
+    <aside className="w-64 shrink-0 flex flex-col h-full bg-bg-sidebar border-r border-border transition-all duration-200">
       <div className="p-4 border-b border-border">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-6 h-6 rounded bg-accent flex items-center justify-center">
-            <span className="text-xs font-bold text-white">C</span>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-accent flex items-center justify-center">
+              <span className="text-xs font-bold text-white">C</span>
+            </div>
+            <span className="text-text-heading font-semibold text-sm tracking-wide">claudinho</span>
           </div>
-          <span className="text-text-heading font-semibold text-sm tracking-wide">claudinho</span>
+          <button
+            onClick={() => setCollapsed(true)}
+            title="Collapse sidebar"
+            className="text-text-muted hover:text-text-base transition-colors"
+          >
+            <PanelLeftClose size={16} />
+          </button>
         </div>
 
         <button
